@@ -1,11 +1,11 @@
 /*  DynamixelExample_Write
-    Version 1
+    Version 2
     
     This sketch gives the framework to communicate with Dynamixel servos.
 
     Based on example code from: https://robosavvy.com/forum/viewtopic.php?t=4505
     With the following changes:
-    1.) Length byte increased from 3 to 4 in setLED()
+    1.) Packet length byte increased from 3 to 4 in setLED()
     2.) Serial.print(value, BYTE) changed to Serial.write(value)
     3.) Set baud rate to 57,142
     4.) Added pinMode(2, OUTPUT) to setup.
@@ -14,6 +14,7 @@
     
     Version Notes
     1.) Initial release.
+    2.) Formatting cleanup.
 
 */
 
@@ -51,19 +52,19 @@ void loop() {
 
 
 void setLED (byte servoID, byte ledState){ 
-  unsigned int checksum_ACK; 
-  byte notchecksum; 
-    
-  checksum_ACK =  servoID + 0x04 + 0x03 + LEDAddress + ledState; 
-  notchecksum = ~checksum_ACK; 
+  
+  byte packetLength = 0x04;
+  byte messageType = 0x03;
+
+  byte notchecksum = ~ lowByte (servoID + packetLength + messageType + LEDAddress + ledState);
   
   digitalWrite(2,HIGH);      // Notify max485 transciever to accept tx 
   
   Serial.write(0xFF);        // 1. First start byte 
   Serial.write(0xFF);        // 2. Second start byte
   Serial.write(servoID);     // 3. ID of target servo. 
-  Serial.write(0x04);        // 4. Length of string 
-  Serial.write(0x03);        // 5. Message type: ping 0x01, read 0x02, write 0x03, or syncwrite 0x83 
+  Serial.write(packetLength);// 4. Length of packet
+  Serial.write(messageType);        // 5. Message type: ping 0x01, read 0x02, write 0x03, or syncwrite 0x83 
   Serial.write(LEDAddress);  // 6. Start address for data to be written 
   Serial.write(ledState);    // 7. Data payload 
   Serial.write(notchecksum); // 8. The check byte
