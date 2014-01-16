@@ -1,7 +1,8 @@
 /*  DynamixelExample_Write
-    Version 2
+    Version 3
     
-    This sketch gives the framework to communicate with Dynamixel servos.
+    This sketch gives the framework to communicate with Dynamixel servos. 
+    It uses the example of changing the servo's LED state.
 
     Based on example code from: https://robosavvy.com/forum/viewtopic.php?t=4505
     With the following changes:
@@ -15,6 +16,7 @@
     Version Notes
     1.) Initial release.
     2.) Formatting cleanup.
+    3.) Formatting and annotation cleanup.
 
 */
 
@@ -58,17 +60,17 @@ void setLED (byte servoID, byte ledState){
 
   byte notchecksum = ~ lowByte (servoID + packetLength + messageType + LEDAddress + ledState);
   
-  digitalWrite(2,HIGH);      // Notify max485 transciever to accept tx 
+  digitalWrite(2,HIGH);      // Set max485 transciever to Transmit 
   
   Serial.write(0xFF);        // 1. First start byte 
   Serial.write(0xFF);        // 2. Second start byte
   Serial.write(servoID);     // 3. ID of target servo. 
   Serial.write(packetLength);// 4. Length of packet
-  Serial.write(messageType);        // 5. Message type: ping 0x01, read 0x02, write 0x03, or syncwrite 0x83 
+  Serial.write(messageType); // 5. Message type: ping 0x01, read 0x02, write 0x03, or syncwrite 0x83 
   Serial.write(LEDAddress);  // 6. Start address for data to be written 
   Serial.write(ledState);    // 7. Data payload 
   Serial.write(notchecksum); // 8. The check byte
   
   delayMicroseconds(1300);   // Wait for last byte to go through. The time value depends on the message length. View on a scope to minimize.
-  digitalWrite(2,LOW);       // Notify max485 transciever to recieve 
+  digitalWrite(2,LOW);       // Set max485 transciever to Recieve 
 } // setLED()

@@ -1,9 +1,11 @@
 /*  
     DynamixelExample_SyncWrite
-    Version 1
+    Version 2
     
     This sketch gives the framework to communicate with Dynamixel servos.
-    In addition, it shows how to use syncWrite packets to communicate with several Synamixels quickly.
+    Specifically, it shows how to use syncWrite packets to communicate with several Dynamixels quickly.
+    This sends goalPosition commands the oscillate sinusoidally. 
+    
     
     Notes
     - This depends upon having the servo addresses be consecutive (e.g. 4, 5, 6). 
@@ -11,7 +13,8 @@
     - Depends on a baud rate of 57,142
     
     Version Notes
-    1) Implements writeGoalPosition via syncWrite for indefinite number of servos. 
+    1.) Implements writeGoalPosition via syncWrite for indefinite number of servos. 
+    2.) Formatting and annotation cleanup.
 
 */
 
@@ -58,7 +61,7 @@ void computeCommandValues() {
       commandValue[i] = (int)( centerPoint + 200*sin(sineCounter) );
   }
   
-  sineCounter += 0.01;
+  sineCounter += 0.1;
   
 } // computeCommandValues()
 
@@ -66,17 +69,17 @@ void computeCommandValues() {
 void writeGoalPosition(){
   
   // GoalPosition command parameters  
-  byte startAddress = 0X1E; // the address of the data byte (give reference manual link)
-  byte servoID = 0xFE; // 0xFE means broadcast to all servos 
+  byte startAddress = 0X1E;   // the address of the data byte (give reference manual link)
+  byte servoID = 0xFE;        // 0xFE means broadcast to all servos 
   byte dataLength = 2;
-  byte messageType = 0x83; // specifies syncWrite
+  byte messageType = 0x83;    // specifies syncWrite
 
   // start to build the checksum
   byte packetLength = (dataLength + 1) * NUMSERVOS + 4;
   byte notchecksum = 0xFE + packetLength + messageType + startAddress + dataLength;
   
   // prepare to write
-  digitalWrite(max485pin,HIGH);// Notify max485 to accept tx
+  digitalWrite(max485pin,HIGH);// Set max485 transciever to Transmit
   
   // write
   Serial.write(0xFF);          // First start byte 
@@ -100,6 +103,6 @@ void writeGoalPosition(){
   Serial.write(notchecksum);   // The checksum byte
   
   // finish writing
-  delayMicroseconds(1300 + NUMSERVOS*500); // allow last byte to go through. The time value depends on the message length. View on a scope to minimize.
+  delayMicroseconds(1300 + NUMSERVOS*500); // Wait for last byte to go through.  The time value depends on the message length. View on a scope to minimize.
   digitalWrite(max485pin,LOW); // Set max485 transciever to recieve 
 } // writeGoalPosition
