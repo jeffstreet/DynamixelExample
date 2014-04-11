@@ -20,7 +20,7 @@
 
 // Define Constants //
 
-#define NUMSERVOS 4  // the total number of serovs
+#define NUMSERVOS 10  // the total number of serovs
 #define FIRSTSERVO 1 // the address of the first servo (assumes addresses are consecutive)
 
 
