@@ -1,6 +1,6 @@
 /*  
     DynamixelExample_SyncWrite
-    Version 2
+    Version 3
     
     This sketch gives the framework to communicate with Dynamixel servos.
     Specifically, it shows how to use syncWrite packets to communicate with several Dynamixels quickly.
@@ -15,12 +15,13 @@
     Version Notes
     1.) Implements writeGoalPosition via syncWrite for indefinite number of servos. 
     2.) Formatting and annotation cleanup.
+    3.) Increased baud rate to 1Mbps.
 
 */
 
 // Define Constants //
 
-#define NUMSERVOS 10  // the total number of serovs
+#define NUMSERVOS 18  // the total number of serovs
 #define FIRSTSERVO 1 // the address of the first servo (assumes addresses are consecutive)
 
 
@@ -38,7 +39,9 @@ int max485pin = 2;
 void setup() { 
   pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
-  Serial.begin(57142);
+  //Serial.begin(57142);
+  Serial.begin(1000000);
+
 } 
 
 
@@ -103,6 +106,6 @@ void writeGoalPosition(){
   Serial.write(notchecksum);   // The checksum byte
   
   // finish writing
-  delayMicroseconds(1300 + NUMSERVOS*500); // Wait for last byte to go through.  The time value depends on the message length. View on a scope to minimize.
+  delayMicroseconds(100); // Wait for last byte to go through.  The time value depends on baud rate and message length. View on a scope to minimize.
   digitalWrite(max485pin,LOW); // Set max485 transciever to recieve 
 } // writeGoalPosition
